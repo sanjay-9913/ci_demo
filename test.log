@@ -1,0 +1,9 @@
+Camera Test
+============
+Device: /dev/video0
+Resolution: 1920x1080
+Requested FPS: 30
+Frames captured: 0
+Capture time: 0.000975625 seconds
+Measured FPS: 0
+RESULT: FAIL
