@@ -1,0 +1,66 @@
+name: Camera Video CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  camera_test:
+
+    runs-on: self-hosted
+
+    steps:
+
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Build camera test
+        run: |
+          g++ camera_test.cpp \
+          $(pkg-config --cflags --libs gstreamer-1.0 gstreamer-app-1.0) \
+          -o camera_test
+
+      - name: Run camera test
+        run: |
+          ./camera_test /dev/video4
+
+      - name: Collect environment
+        if: always()
+        run: |
+          mkdir -p artifacts/environment
+
+          uname -a \
+            > artifacts/environment/kernel.txt
+
+          g++ --version \
+            > artifacts/environment/compiler.txt
+
+          gst-launch-1.0 --version \
+            > artifacts/environment/gstreamer.txt
+
+          v4l2-ctl --all -d /dev/video4 \
+            > artifacts/environment/v4l2.txt
+
+      - name: Collect logs
+        if: always()
+        run: |
+          mkdir -p artifacts/debug
+
+          cp test.log \
+             artifacts/debug/test.log || true
+
+      - name: Collect video
+        if: always()
+        run: |
+          mkdir -p artifacts/output
+
+          cp capture.mp4 \
+             artifacts/output/capture.mp4 || true
+
+      - name: Upload CI artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: camera-ci-results
+          path: artifacts/
+
