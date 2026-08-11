@@ -1,0 +1,19 @@
+name: C++ CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Build C++ program
+        run: g++ main.cpp -o test_app
+
+      - name: Run C++ test
+        run: ./test_app
